@@ -4,13 +4,13 @@ import os
 import datetime
 from threading import Thread
 from queue import Queue
-import matplotlib.pyplot as plt
 
 from style_transfer import StyleTransfer
+from face_recognition import FaceRecognition
 
 
 class Camera:
-    def __init__(self, mirror=False):
+    def __init__(self, mirror=False, style=False):
         self.data = None
         self.cam = cv2.VideoCapture(0)
 
@@ -29,9 +29,12 @@ class Camera:
 
         self.recording = False
 
-        self.style = True
-        self.style_img = plt.imread("./style/VK1913.jpg")
-        self.style_transfer = StyleTransfer()
+        self.faces = None
+        self.face_recognition = FaceRecognition()
+
+        self.style = style
+
+        self.style_transfer = StyleTransfer(self.WIDTH, self.HEIGHT)
         self.style_transfer.load()
 
         self.mirror = mirror
@@ -65,7 +68,14 @@ class Camera:
                         np_image = self.__zoom(np_image)
 
                 if self.style:
-                    np_image = self.transform(np_image)
+                    copy_img = np_image.copy()
+                    face = self.face_recognition.predict(np_image)
+                    copy_img = self.transform(copy_img)
+                    if face is not None:
+                        x, y, w, h = face[0]
+                        cropped_face = np_image[y:y + h, x:x + w]
+                        copy_img[y:y + h, x:x + w] = cropped_face
+                    np_image = copy_img
 
                 self.data = np_image
                 k = cv2.waitKey(1)
@@ -147,7 +157,7 @@ class Camera:
             self.touch_init()
 
     def transform(self, img):
-        self.style_transfer.predict(img, self.style_img)
+        img = self.style_transfer.predict(img)
         return img
 
     def save_picture(self):
@@ -221,6 +231,9 @@ class Camera:
                 # v : zoom 상태를 원상태로 복구
                 self.touch_init()
 
+            elif key == ord('s'):
+                self.style = True
+
             elif key == ord('r'):
                 # r : 동영상 촬영 시작 및 종료
                 self.recording = not self.recording
@@ -241,6 +254,6 @@ class Camera:
 
 
 if __name__ == '__main__':
-    cam = Camera(mirror=True)
+    cam = Camera(mirror=True, style=True)
     cam.stream()
     cam.show()
