@@ -69,12 +69,13 @@ class Camera:
 
                 if self.style:
                     copy_img = np_image.copy()
-                    face = self.face_recognition.predict(np_image)
+                    #face = self.face_recognition.predict(np_image)
                     copy_img = self.transform(copy_img)
-                    if face is not None:
-                        x, y, w, h = face[0]
-                        cropped_face = np_image[y:y + h, x:x + w]
-                        copy_img[y:y + h, x:x + w] = cropped_face
+#                    if face is not None:
+#                        x, y, w, h = face[0]
+#                        cropped_face = np_image[y:y + h, x:x + w]
+#                        copy_img[y:y + h, x:x + w] = cropped_face
+
                     np_image = copy_img
 
                 self.data = np_image

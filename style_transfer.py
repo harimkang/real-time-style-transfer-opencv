@@ -4,13 +4,13 @@ import cv2
 import numpy as np
 from PIL import Image
 import logging
+import os
 
 
 class StyleTransfer:
     def __init__(self, width, height):
         self.model = None
         self.style_img = Image.open("./style/VK1913.jpg")
-
         self.WIDTH = width
         self.HEIGHT = height
 
@@ -19,9 +19,7 @@ class StyleTransfer:
         # module_path = 'https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2'
         # self.model = hub.load(module_path)
 
-        self.model = tf.saved_model.load(
-            "./models/magenta_arbitrary-image-stylization-v1-256_2", tags=None
-        )
+        self.model = tf.saved_model.load("./models/magenta_arbitrary-image-stylization-v1-256_2", tags=None)
         logging.info('===== Style Transfer Loaded=====')
 
         self.style_img = self.convert_style_img(self.style_img)
