@@ -1,16 +1,28 @@
+"""
+Programmer: Harim Kang, Dahsom Jang
+Description: Streaming Camera with zoom function, face segmentation, and style transfer function
+"""
+
 import cv2
 import time
 import os
 import datetime
 from threading import Thread
 from queue import Queue
+import numpy as np
 
 from style_transfer import StyleTransfer
-from face_recognition import FaceRecognition
+from image_segmentation import ImageSegmentation
+from Button import ButtonManager
 
 
 class Camera:
+    # Camera class for streaming
     def __init__(self, mirror=False, style=False):
+        """
+        mirror: Support camera mirror mode
+        style: Style transfer application
+        """
         self.data = None
         self.cam = cv2.VideoCapture(0)
 
@@ -24,24 +36,27 @@ class Camera:
         self.image_queue = Queue()
         self.video_queue = Queue()
 
+        self.btn_manager = ButtonManager(self.WIDTH, self.HEIGHT)
+
         self.scale = 1
         self.__setup()
 
         self.recording = False
 
-        self.faces = None
-        self.face_recognition = FaceRecognition()
-
         self.style = style
+        self.face_transfer = False
 
         self.style_transfer = StyleTransfer(self.WIDTH, self.HEIGHT)
         self.style_transfer.load()
+
+        self.image_segmentation = ImageSegmentation(self.WIDTH, self.HEIGHT)
 
         self.mirror = mirror
 
     def __setup(self):
         self.cam.set(cv2.CAP_PROP_FRAME_WIDTH, self.WIDTH)
         self.cam.set(cv2.CAP_PROP_FRAME_HEIGHT, self.HEIGHT)
+        self.btn_manager.button_setting()
         time.sleep(2)
 
     def get_location(self, x, y):
@@ -50,33 +65,29 @@ class Camera:
         self.touched_zoom = True
 
     def stream(self):
-        # streaming thread 함수
+        # Streaming thread Function
         def streaming():
-            # 실제 thread 되는 함수
             self.ret = True
             while self.ret:
                 self.ret, np_image = self.cam.read()
                 if np_image is None:
                     continue
                 if self.mirror:
-                    # 거울 모드 시 좌우 반전
+                    # Mirror mode function
                     np_image = cv2.flip(np_image, 1)
                 if self.touched_zoom:
+                    # When using the double-click zoom function,
                     np_image = self.__zoom(np_image, (self.center_x, self.center_y))
                 else:
+                    # When not zoomed,
                     if not self.scale == 1:
                         np_image = self.__zoom(np_image)
 
                 if self.style:
-                    copy_img = np_image.copy()
-                    #face = self.face_recognition.predict(np_image)
-                    copy_img = self.transform(copy_img)
-#                    if face is not None:
-#                        x, y, w, h = face[0]
-#                        cropped_face = np_image[y:y + h, x:x + w]
-#                        copy_img[y:y + h, x:x + w] = cropped_face
+                    # Convert image to style transfer
+                    image_result = self.transform(np_image)
 
-                    np_image = copy_img
+                    np_image = image_result
 
                 self.data = np_image
                 k = cv2.waitKey(1)
@@ -100,12 +111,12 @@ class Camera:
             center_x, center_y = center
 
             #   비율 범위에 맞게 중심값 계산
-            if center_x < width * (1-rate):
-                center_x = width * (1-rate)
+            if center_x < width * (1 - rate):
+                center_x = width * (1 - rate)
             elif center_x > width * rate:
                 center_x = width * rate
-            if center_y < height * (1-rate):
-                center_y = height * (1-rate)
+            if center_y < height * (1 - rate):
+                center_y = height * (1 - rate)
             elif center_y > height * rate:
                 center_y = height * rate
 
@@ -158,11 +169,25 @@ class Camera:
             self.touch_init()
 
     def transform(self, img):
-        img = self.style_transfer.predict(img)
-        return img
+        copy_img = img.copy()
+        # 1. Get a converted image with style transfer
+        style_img = self.style_transfer.predict(copy_img)
+        # 2. Getting a mask with face segmentation
+        seg_mask = self.image_segmentation.predict(copy_img)
+        mask = cv2.cvtColor(seg_mask, cv2.COLOR_GRAY2RGB)
+
+        # 3. Combine face only with image converted to style transfer
+        if self.face_transfer:
+            image_result = np.where(mask, style_img, copy_img)
+        else:
+            image_result = np.where(mask, copy_img, style_img)
+        return image_result
+
+    def event(self, i):
+        self.style_transfer.change_style(i)
 
     def save_picture(self):
-        # 이미지 저장하는 함수
+        # Save Image Function
         ret, img = self.cam.read()
         if ret:
             now = datetime.datetime.now()
@@ -174,7 +199,7 @@ class Camera:
             self.image_queue.put_nowait(filename)
 
     def record_video(self):
-        # 동영상 녹화 함수
+        # Recording Function
         fc = 20.0
         record_start_time = time.time()
         now = datetime.datetime.now()
@@ -207,6 +232,7 @@ class Camera:
         while True:
             frame = self.data
             if frame is not None:
+                self.btn_manager.draw(frame)
                 cv2.imshow('SMS', frame)
                 cv2.setMouseCallback('SMS', self.mouse_callback)
             key = cv2.waitKey(1)
@@ -229,14 +255,14 @@ class Camera:
                 self.save_picture()
 
             elif key == ord('v'):
-                # v : zoom 상태를 원상태로 복구
+                # v : original state
                 self.touch_init()
 
             elif key == ord('s'):
                 self.style = True
 
             elif key == ord('r'):
-                # r : 동영상 촬영 시작 및 종료
+                # r : recording
                 self.recording = not self.recording
                 if self.recording:
                     t = Thread(target=cam.record_video)
@@ -247,7 +273,18 @@ class Camera:
         cv2.destroyAllWindows()
 
     def mouse_callback(self, event, x, y, flag, param):
-        if event == cv2.EVENT_LBUTTONDBLCLK:
+        if event == cv2.EVENT_LBUTTONDOWN:
+            self.btn_manager.btn_on_click(x, y)
+            if 1 in self.btn_manager.button_flag:
+                self.style = True
+                for i in range(len(self.btn_manager.button_flag)):
+                    if self.btn_manager.button_flag[i] == 1:
+                        self.event(i)
+                        break
+            else:
+                self.style = False
+
+        elif event == cv2.EVENT_LBUTTONDBLCLK:
             self.get_location(x, y)
             self.zoom_in()
         elif event == cv2.EVENT_RBUTTONDOWN:
@@ -255,6 +292,6 @@ class Camera:
 
 
 if __name__ == '__main__':
-    cam = Camera(mirror=True, style=True)
+    cam = Camera(mirror=True, style=False)
     cam.stream()
     cam.show()

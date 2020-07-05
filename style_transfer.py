@@ -1,16 +1,22 @@
+"""
+Programmer: Harim Kang
+Description: Style Transfer Class
+"""
+
 # import tensorflow_hub as hub
 import tensorflow as tf
 import cv2
 import numpy as np
 from PIL import Image
 import logging
-import os
 
 
 class StyleTransfer:
     def __init__(self, width, height):
         self.model = None
-        self.style_img = Image.open("./style/VK1913.jpg")
+        self.current = 1
+
+        self.style_img = [Image.open("./style/gogh.jpg"), Image.open("./style/VK1913.jpg"), Image.open("./style/monet.jpg")]
         self.WIDTH = width
         self.HEIGHT = height
 
@@ -22,8 +28,8 @@ class StyleTransfer:
         self.model = tf.saved_model.load("./models/magenta_arbitrary-image-stylization-v1-256_2", tags=None)
         logging.info('===== Style Transfer Loaded=====')
 
-        self.style_img = self.convert_style_img(self.style_img)
-        self.style_img = image2constant(self.style_img)
+    def change_style(self, i):
+        self.current = i
 
     def convert_style_img(self, image):
         image = image.convert('RGB')
@@ -33,11 +39,14 @@ class StyleTransfer:
         return image
 
     def predict(self, frame):
+        img = self.convert_style_img(self.style_img[self.current])
+        img = image2constant(img)
+
         content_image = np.array([cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)])
         content_image = image2constant(content_image)
 
         y_predict = self.model.signatures['serving_default'](placeholder=content_image,
-                                                             placeholder_1=self.style_img)['output_0'].numpy()
+                                                             placeholder_1=img)['output_0'].numpy()
         image = cv2.cvtColor((y_predict[0] * 255).astype(np.uint8), cv2.COLOR_RGB2BGR)
         return image
 
