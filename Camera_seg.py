@@ -81,8 +81,8 @@ class Camera:
                     imseg.predict()
                     mask=imseg.get_mask()
                     mask=cv2.cvtColor(mask,cv2.COLOR_GRAY2RGB)
+                    #image_result=np.where(mask,np_image,copy_img)
                     image_result=np.where(mask,copy_img,np_image)
-
                     #np_image = copy_img
                     np_image=image_result
 

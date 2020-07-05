@@ -23,6 +23,7 @@ class ImageSegmentation:
 
   def predict(self):
     self.model=tf.keras.models.load_model('./models/unet_no_drop.h5')
+    #self.model=tf.keras.models.load_model('./models/unet.h5')
     self.input_image = self.image_preprocess()
     self.pred = self.model.predict(self.input_image)
 
@@ -48,8 +49,11 @@ class ImageSegmentation:
         diff = (height - new_height) // 2
         img = cv2.resize(img, (width, new_height))
         im[diff:diff + new_height, :, :] = img
-    
+
+    input_image=im.reshape((width,height,3))
+    input_image=self.image_sharpening(im)
     input_image=im.reshape((1, width, height, 3)).astype(np.float32) / 255.
+    
     
     return input_image
   
@@ -71,3 +75,13 @@ class ImageSegmentation:
     result_mask = cv2.resize(result_mask, dsize=(width, height))
     result_mask      
     return result_mask
+
+  def image_sharpening(self,image):
+    sharpening= np.array([[-1, -1, -1, -1, -1],
+                             [-1, 2, 2, 2, -1],
+                             [-1, 2, 9, 2, -1],
+                             [-1, 2, 2, 2, -1],
+                             [-1, -1, -1, -1, -1]]) / 9.0
+
+    dst = cv2.filter2D(image, -1, sharpening)
+    return dst
