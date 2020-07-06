@@ -184,21 +184,23 @@ class Camera:
     def transform(self, img):
         # Functions that perform style transfers
         copy_img = img.copy()
+        copy_img2 = img.copy()
         # 1. Get a converted image with style transfer
         style_img = self.style_transfer.predict(copy_img)
         # 2. Getting a mask with face segmentation
-        seg_mask = self.image_segmentation.predict(copy_img)
+        seg_mask = self.image_segmentation.predict(copy_img2)
         mask = cv2.cvtColor(seg_mask, cv2.COLOR_GRAY2RGB)
 
         # 3. Combine face only with image converted to style transfer
         if self.face_transfer:
-            image_result = np.where(mask, style_img, copy_img)
+            image_result = np.where(mask, style_img, img)
         else:
-            image_result = np.where(mask, copy_img, style_img)
+            image_result = np.where(mask, img, style_img)
         return image_result
 
     def event(self, i):
         # Function to change style according to button event
+        self.style = True
         self.style_transfer.change_style(i)
 
     def save_picture(self):
@@ -209,7 +211,7 @@ class Camera:
             date = now.strftime('%Y%m%d')
             hour = now.strftime('%H%M%S')
             user_id = '00001'
-            filename = './images/cvui_{}_{}_{}.png'.format(date, hour, user_id)
+            filename = './images/mevia_{}_{}_{}.png'.format(date, hour, user_id)
             cv2.imwrite(filename, img)
             self.image_queue.put_nowait(filename)
 
@@ -221,10 +223,10 @@ class Camera:
         date = now.strftime('%Y%m%d')
         t = now.strftime('%H')
         num = 1
-        filename = 'videos/cvui_{}_{}_{}.avi'.format(date, t, num)
+        filename = 'videos/mevia_{}_{}_{}.avi'.format(date, t, num)
         while os.path.exists(filename):
             num += 1
-            filename = 'videos/cvui_{}_{}_{}.avi'.format(date, t, num)
+            filename = 'videos/mevia_{}_{}_{}.avi'.format(date, t, num)
         codec = cv2.VideoWriter_fourcc('D', 'I', 'V', 'X')
         out = cv2.VideoWriter(filename, codec, fc, (int(self.cam.get(3)), int(self.cam.get(4))))
         while self.recording:
@@ -258,8 +260,8 @@ class Camera:
             frame = self.data
             if frame is not None:
                 self.btn_manager.draw(frame)
-                cv2.imshow('SMS', frame)
-                cv2.setMouseCallback('SMS', self.mouse_callback)
+                cv2.imshow('Mevia', frame)
+                cv2.setMouseCallback('Mevia', self.mouse_callback)
             key = cv2.waitKey(1)
             if key == ord('q'):
                 # q : close
@@ -300,11 +302,14 @@ class Camera:
             # Left click once (or touch)
             # Determining whether a button is clicked by passing the click position to the button manager
             self.btn_manager.btn_on_click(x, y)
+            if self.btn_manager.button_flag[-1] == 0:
+                self.face_transfer = False
+            else:
+                self.face_transfer = True
             if 1 in self.btn_manager.button_flag:
                 # If the button was clicked, On style transfer
-                self.style = True
                 for i in range(len(self.btn_manager.button_flag)):
-                    if self.btn_manager.button_flag[i] == 1:
+                    if self.btn_manager.button_flag[i] == 1 and i != 6:
                         # Change the style to suit the clicked button
                         self.event(i)
                         break

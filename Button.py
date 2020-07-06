@@ -181,12 +181,15 @@ class ButtonManager:
         # Change the status of button_flag by checking which button in the button list has an event.
         for i in range(len(self.button_list)):
             if self.button_list[i].on_click(x, y):
-                if self.button_flag[i] == 1:
-                    self.button_flag = [0 for _ in self.button_list]
-                else:
-                    self.button_flag = [0 for _ in self.button_list]
+                if i == 6:
                     self.button_flag[i] = 1
-                break
+                else:
+                    if self.button_flag[i] == 1:
+                        self.button_flag[:6] = [0 for _ in range(6)]
+                    else:
+                        self.button_flag[:6] = [0 for _ in range(6)]
+                        self.button_flag[i] = 1
+                    break
 
     def check_flag(self):
         # Set the button by checking the on-off state of the button.
@@ -199,17 +202,27 @@ class ButtonManager:
     def button_setting(self):
         # This is an example function.
         # You can create a button using the example below.
+        btn = Button()
+        btn.set_text("Gogh")
         btn2 = Button()
-        btn2.set_text("GOGH")
+        btn2.set_text("Kandinsky")
+        btn2.text_size = 0.4
         btn3 = Button()
-        btn3.set_text("VK1913")
+        btn3.set_text("Monet")
         btn4 = Button()
-        btn4.set_text("MONET")
-        btn_list = [btn2, btn3, btn4]
+        btn4.set_text("Picasso")
+        btn5 = Button()
+        btn5.set_text("Na")
+        btn6 = Button()
+        btn6.set_text("Mario")
+        icon = cv2.imread('baseline_tag_faces_black_28.png')
+        btn7 = Button()
+        btn7.icon = icon
+        btn_list = [btn, btn2, btn3, btn4, btn5, btn6, btn7]
         self.add_button_list(btn_list)
 
 
-def set_icon(image, icon, x, y, white=True, icon_size=50):
+def set_icon(image, icon, x, y, white=True, icon_size=28):
     # This function draws an icon when creating an icon button.
     icon_img = cv2.resize(icon, dsize=(icon_size, icon_size), interpolation=cv2.INTER_AREA)
     width = icon_img.shape[0]
@@ -217,13 +230,13 @@ def set_icon(image, icon, x, y, white=True, icon_size=50):
     roi = image[y:y + height, x:x + width]
     mask = cv2.bitwise_not(icon_img)
     if white:
-        image = cv2.add(roi, mask)
+        mask_image = cv2.add(roi, mask)
     else:
         gray = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
         ret, mask = cv2.threshold(gray, 100, 255, cv2.THRESH_BINARY)
         mask_inv = cv2.bitwise_not(mask)
-        image = cv2.bitwise_and(roi, roi, mask=mask_inv)
-    image[y:y + height, x:x + width] = image
+        mask_image = cv2.bitwise_and(roi, roi, mask=mask_inv)
+    image[y:y + height, x:x + width] = mask_image
 
 # if __name__ == "__main__":
 #     cam = Camera()

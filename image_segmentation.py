@@ -93,3 +93,17 @@ def image_sharpening(image):
 
     dst = cv2.filter2D(image, -1, sharpening)
     return dst
+
+
+# if __name__ == '__main__':
+#
+#     img = cv2.imread('images/1.png', cv2.IMREAD_COLOR)
+#     cv2.resize(img, (640, 480))
+#     image_segmentation = ImageSegmentation(640, 480)
+#     copy_img = img.copy()
+#     seg_mask = image_segmentation.predict(copy_img)
+#     mask = cv2.cvtColor(seg_mask, cv2.COLOR_GRAY2RGB)
+#     cv2.imshow('1', mask)
+#
+#     cv2.waitKey(0)
+#     cv2.destroyAllWindows()

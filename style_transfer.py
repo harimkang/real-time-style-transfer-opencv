@@ -20,9 +20,13 @@ class StyleTransfer:
 
         # Style type.
         self.style_img = [
-            Image.open("./style/gogh.jpg"),
-            Image.open("./style/VK1913.jpg"),
-            Image.open("./style/monet.jpg")
+            Image.open("style/gogh.jpg"),
+            Image.open("style/kandinsky.jpg"),
+            Image.open("style/monet.jpg"),
+            Image.open("style/picasso.jpg"),
+            Image.open("style/Na.jpg"),
+            Image.open("style/mario.jpg")
+
         ]
         self.WIDTH = width
         self.HEIGHT = height
