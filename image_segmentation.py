@@ -9,22 +9,29 @@ import cv2
 
 
 class ImageSegmentation:
-
-    def __init__(self, width, height):
+    # Class that recognizes faces and provides segmentation
+    def __init__(self, width, height, no_drop=True):
 
         self.width, self.height = width, height
         self.input_size = (256, 256)
 
-        self.model = tf.keras.models.load_model('./models/unet_no_drop.h5')
-        # self.model=tf.keras.models.load_model('./models/unet.h5')
+        # Image Segmentation Model Load
+        if no_drop:
+            self.model = tf.keras.models.load_model('./models/unet_no_drop.h5')
+        else:
+            self.model = tf.keras.models.load_model('./models/unet.h5')
 
     def predict(self, image):
+        # Function to pre-process an image,
+        # perform segmentation prediction using a model,
+        # and generate and return a mask as a result
         input_image = self.image_ready(image)
         seg_mask = self.model.predict(input_image)
         mask = self.generate_mask(seg_mask)
         return mask
 
     def image_ready(self, image):
+        # Image pre-processing function
         if type(image) != np.ndarray:
             pil_image = image.convert('RGB')
             open_cv_image = np.array(pil_image)
@@ -58,6 +65,7 @@ class ImageSegmentation:
         return input_image
 
     def generate_mask(self, seg_mask, threshold=0.5):
+        # Function to generate mask with predicted segmentation information
         height, width = self.height, self.width
         prediction = seg_mask
         mask_ori = (prediction.squeeze()[:, :, 1] > threshold).astype(np.uint8)
@@ -76,6 +84,7 @@ class ImageSegmentation:
 
 
 def image_sharpening(image):
+    # Sharpening the image
     sharpening = np.array([[-1, -1, -1, -1, -1],
                            [-1, 2, 2, 2, -1],
                            [-1, 2, 9, 2, -1],

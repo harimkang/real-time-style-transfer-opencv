@@ -1,37 +1,47 @@
 """
 Programmer: Harim Kang
 Description: Style Transfer Class
+Reference: https://wikidocs.net/79287
+Style transfer Model: https://tfhub.dev/google/lite-model/magenta/arbitrary-image-stylization-v1-256/fp16/transfer/1
 """
 
-# import tensorflow_hub as hub
 import tensorflow as tf
 import cv2
 import numpy as np
 from PIL import Image
-import logging
 
 
 class StyleTransfer:
+    # This class takes an image and converts it to a specified style.
     def __init__(self, width, height):
         self.model = None
+        # current: This is an index to select a style belonging to style_img.
         self.current = 1
 
-        self.style_img = [Image.open("./style/gogh.jpg"), Image.open("./style/VK1913.jpg"), Image.open("./style/monet.jpg")]
+        # Style type.
+        self.style_img = [
+            Image.open("./style/gogh.jpg"),
+            Image.open("./style/VK1913.jpg"),
+            Image.open("./style/monet.jpg")
+        ]
         self.WIDTH = width
         self.HEIGHT = height
 
-    def load(self):
-        logging.info('===== Style Transfer Loading=====')
-        # module_path = 'https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2'
-        # self.model = hub.load(module_path)
-
-        self.model = tf.saved_model.load("./models/magenta_arbitrary-image-stylization-v1-256_2", tags=None)
-        logging.info('===== Style Transfer Loaded=====')
+    def load(self, use_hub=False):
+        # Load the model by using tensor-flow_hub or using the local model.
+        if use_hub:
+            import tensorflow_hub as hub
+            module_path = 'https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2'
+            self.model = hub.load(module_path)
+        else:
+            self.model = tf.saved_model.load("./models/magenta_arbitrary-image-stylization-v1-256_2", tags=None)
 
     def change_style(self, i):
+        # Change the index of style_img by changing the current variable.
         self.current = i
 
     def convert_style_img(self, image):
+        # The image's pre-processing function.
         image = image.convert('RGB')
         image = image.resize((self.WIDTH, self.HEIGHT))
         image_numpy = np.array(image)
@@ -39,6 +49,7 @@ class StyleTransfer:
         return image
 
     def predict(self, frame):
+        # Takes an image, converts it to the currently set style, and returns it.
         img = self.convert_style_img(self.style_img[self.current])
         img = image2constant(img)
 
@@ -52,6 +63,7 @@ class StyleTransfer:
 
 
 def image2constant(image):
+    # Convert an image to a tensor-flow constant.
     image = image / 255
     image = image.astype(dtype=np.float32)
     image = tf.constant(image)
