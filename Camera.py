@@ -26,40 +26,50 @@ class Camera:
         self.data = None
         self.cam = cv2.VideoCapture(0)
 
+        self.style = style
+        self.mirror = mirror
+
         self.WIDTH = 640
         self.HEIGHT = 480
 
+        # This parameter is used to know the center position when the zoom function is in use.
         self.center_x = self.WIDTH / 2
         self.center_y = self.HEIGHT / 2
         self.touched_zoom = False
 
+        # Queue for image capture and video recording.
         self.image_queue = Queue()
         self.video_queue = Queue()
 
+        # Button manager object for creating UI buttons.
         self.btn_manager = ButtonManager(self.WIDTH, self.HEIGHT)
 
+        # scale is a variable that determines zoom of the screen.
         self.scale = 1
-        self.__setup()
 
+        # It is a variable to check whether it is currently recording.
         self.recording = False
 
-        self.style = style
+        # Whether to apply the style transfer to the face only.
         self.face_transfer = False
-
+        # An object that performs style transfers.
         self.style_transfer = StyleTransfer(self.WIDTH, self.HEIGHT)
-        self.style_transfer.load()
-
+        # It is an object that recognizes the face and segments it.
         self.image_segmentation = ImageSegmentation(self.WIDTH, self.HEIGHT)
 
-        self.mirror = mirror
+        self.__setup()
 
     def __setup(self):
+        # Prepare the camera settings, button manager, and style transfer objects.
         self.cam.set(cv2.CAP_PROP_FRAME_WIDTH, self.WIDTH)
         self.cam.set(cv2.CAP_PROP_FRAME_HEIGHT, self.HEIGHT)
+
         self.btn_manager.button_setting()
+        self.style_transfer.load()
         time.sleep(2)
 
     def get_location(self, x, y):
+        # Specifies the center of the current screen.
         self.center_x = x
         self.center_y = y
         self.touched_zoom = True
@@ -98,19 +108,20 @@ class Camera:
         Thread(target=streaming).start()
 
     def __zoom(self, img, center=None):
-        # zoom 하는 실제 함수
+        # This function calculates various values ​​according to the scale of the current screen
+        # and applies them to the screen.
         height, width = img.shape[:2]
         if center is None:
-            #   중심값이 초기값일 때의 계산
+            # When the center is the initial value,
             center_x = int(width / 2)
             center_y = int(height / 2)
             radius_x, radius_y = int(width / 2), int(height / 2)
         else:
-            #   특정 위치 지정시 계산
+            # When the center is not the initial value (when the zoom function is activated)
             rate = height / width
             center_x, center_y = center
 
-            #   비율 범위에 맞게 중심값 계산
+            # Calculate center value according to ratio
             if center_x < width * (1 - rate):
                 center_x = width * (1 - rate)
             elif center_x > width * rate:
@@ -126,28 +137,29 @@ class Camera:
             radius_x = min(left_x, right_x)
             radius_y = min(up_y, down_y)
 
-        # 실제 zoom 코드
+        # Calculate position according to proportion
         radius_x, radius_y = int(self.scale * radius_x), int(self.scale * radius_y)
 
-        # size 계산
+        # Size calculation
         min_x, max_x = center_x - radius_x, center_x + radius_x
         min_y, max_y = center_y - radius_y, center_y + radius_y
 
-        # size에 맞춰 이미지를 자른다
+        # Crop the image to fit the calculated size.
         cropped = img[min_y:max_y, min_x:max_x]
-        # 원래 사이즈로 늘려서 리턴
+        # Stretch the cropped image to the original image size.
         new_cropped = cv2.resize(cropped, (width, height))
 
         return new_cropped
 
     def touch_init(self):
+        # Initialize state
         self.center_x = self.WIDTH / 2
         self.center_y = self.HEIGHT / 2
         self.touched_zoom = False
         self.scale = 1
 
     def zoom_out(self):
-        # scale 값을 조정하여 zoom-out
+        # Zoom-out by increasing the scale value
         if self.scale < 1:
             self.scale += 0.1
         if self.scale == 1:
@@ -156,11 +168,12 @@ class Camera:
             self.touched_zoom = False
 
     def zoom_in(self):
-        # scale 값을 조정하여 zoom-in
+        # Zoom-in function by reducing scale value
         if self.scale > 0.2:
             self.scale -= 0.1
 
     def zoom(self, num):
+        # Zoom in & out according to index
         if num == 0:
             self.zoom_in()
         elif num == 1:
@@ -169,6 +182,7 @@ class Camera:
             self.touch_init()
 
     def transform(self, img):
+        # Functions that perform style transfers
         copy_img = img.copy()
         # 1. Get a converted image with style transfer
         style_img = self.style_transfer.predict(copy_img)
@@ -184,6 +198,7 @@ class Camera:
         return image_result
 
     def event(self, i):
+        # Function to change style according to button event
         self.style_transfer.change_style(i)
 
     def save_picture(self):
@@ -229,6 +244,16 @@ class Camera:
                 break
 
     def show(self):
+        # Function to show streaming screen
+        # Provides various functions using keyboard keys
+        """
+        q: Close & Quit
+        z: Zoom-in
+        x: Zoom-out
+        p: Save Picture
+        v: Return initial State
+        r: Video recording
+        """
         while True:
             frame = self.data
             if frame is not None:
@@ -258,9 +283,6 @@ class Camera:
                 # v : original state
                 self.touch_init()
 
-            elif key == ord('s'):
-                self.style = True
-
             elif key == ord('r'):
                 # r : recording
                 self.recording = not self.recording
@@ -273,21 +295,28 @@ class Camera:
         cv2.destroyAllWindows()
 
     def mouse_callback(self, event, x, y, flag, param):
+        # Mouse click event handling function
         if event == cv2.EVENT_LBUTTONDOWN:
+            # Left click once (or touch)
+            # Determining whether a button is clicked by passing the click position to the button manager
             self.btn_manager.btn_on_click(x, y)
             if 1 in self.btn_manager.button_flag:
+                # If the button was clicked, On style transfer
                 self.style = True
                 for i in range(len(self.btn_manager.button_flag)):
                     if self.btn_manager.button_flag[i] == 1:
+                        # Change the style to suit the clicked button
                         self.event(i)
                         break
             else:
                 self.style = False
 
         elif event == cv2.EVENT_LBUTTONDBLCLK:
+            # When double-clicking the left button, activate the zoom function
             self.get_location(x, y)
             self.zoom_in()
         elif event == cv2.EVENT_RBUTTONDOWN:
+            # Right click, zoom out
             self.zoom_out()
 
 
