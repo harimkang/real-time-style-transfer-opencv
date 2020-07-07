@@ -64,7 +64,7 @@ class ImageSegmentation:
 
         return input_image
 
-    def generate_mask(self, seg_mask, threshold=0.5):
+    def generate_mask(self, seg_mask, threshold=0.1):
         # Function to generate mask with predicted segmentation information
         height, width = self.height, self.width
         prediction = seg_mask

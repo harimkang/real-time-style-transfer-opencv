@@ -25,6 +25,8 @@ class Camera:
         """
         self.data = None
         self.cam = cv2.VideoCapture(0)
+        self.cam.set(3,1280) 
+        self.cam.set(4,720) 
 
         self.style = style
         self.mirror = mirror
