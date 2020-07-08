@@ -24,9 +24,8 @@ class Camera:
         style: Style transfer application
         """
         self.data = None
+        self.data_ready = False
         self.cam = cv2.VideoCapture(0)
-        self.cam.set(3,1280) 
-        self.cam.set(4,720) 
 
         self.style = style
         self.mirror = mirror
@@ -82,6 +81,7 @@ class Camera:
             self.ret = True
             while self.ret:
                 self.ret, np_image = self.cam.read()
+                self.data_ready = False
                 if np_image is None:
                     continue
                 if self.mirror:
@@ -102,6 +102,7 @@ class Camera:
                     np_image = image_result
 
                 self.data = np_image
+                self.data_ready = True
                 k = cv2.waitKey(1)
                 if k == ord('q'):
                     self.release()
@@ -241,7 +242,10 @@ class Camera:
                     name = self.video_queue.get()
                     if os.path.exists(name):
                         os.remove(name)
-                out.write(frame)
+                if self.data is not None:
+                    out.write(self.data)
+                else:
+                    out.write(frame)
                 self.video_queue.put_nowait(filename)
             k = cv2.waitKey(1)
             if k == ord('q'):
