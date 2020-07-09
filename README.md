@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://davinci-ai.tistory.com/)
 
+![git_logo2](https://user-images.githubusercontent.com/38045080/86984908-d3409100-c1ca-11ea-8bf2-f2b450037a25.PNG)
+
 This project shows the streaming of open-cv by applying the style-transfer to the background (or person) except the person (or background) in real time using a web-cam connected to a laptop or computer.
 
   - Basic streaming function
@@ -70,12 +72,14 @@ $ python Camera.py
 - [Davinci-AI](https://davinci-ai.tistory.com/)
 
 ## Team
+![real-time](https://user-images.githubusercontent.com/38045080/86984202-e4889e00-c1c8-11ea-8521-c115c42d302b.png)
 
-The project was conducted at the Korea Institute of Artificial Intelligence and formed a team called [Mevia].
+The project was conducted at the Korea Lab of Artificial Intelligence and formed a team called Mevia.
 - Harim Kang
 - Dahsom Jang
 - Yujin Nam
 
+![ezgif com-webp-to-png](https://user-images.githubusercontent.com/38045080/86984248-02560300-c1c9-11ea-8102-93ba35c05987.png)
 
 License
 ----
