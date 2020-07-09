@@ -13,6 +13,8 @@ This project shows the streaming of open-cv by applying the style-transfer to th
 
 > Style Transfer can be applied by using a pre-trained model or by training yourself. There are many sources and sites that provide the ability to convert images, but there are few sources that are easily applied in real time, and in order to realize a simple idea that applies only to backgrounds other than people, we need to customize it to start the project.
 
+> So we came up with this project.
+
 ### Environment
 
 real-time-style-transfer-opencv was developed using the following library version:
