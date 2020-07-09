@@ -315,7 +315,7 @@ class Camera:
             if 1 in self.btn_manager.button_flag:
                 # If the button was clicked, On style transfer
                 for i in range(len(self.btn_manager.button_flag)):
-                    if self.btn_manager.button_flag[i] == 1 and i != 6:
+                    if self.btn_manager.button_flag[i] == 1 and i != len(self.btn_manager.button_flag)-1:
                         # Change the style to suit the clicked button
                         self.event(i)
                         break
