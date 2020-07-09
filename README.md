@@ -60,9 +60,31 @@ Just Start:
 $ python Camera.py
 ```
 
-### Step
-- To Do
+And Use Buttons and Icon:
 
+![image](https://user-images.githubusercontent.com/38045080/87044268-454bc100-c231-11ea-9632-d3f62b502437.png)
+
+- Buttons: Click to switch the video to the painter's style. The button is blue in the On state and the photo in the Off state. Currently, there are Gogh, Kandinsky, Monet, Picasso, Na Hye-suk and Super Mario painting styles.
+- Icon: The icon is available when you are in Style Transfer (when a certain button is On), and if Style Transfer is applied only to the background, it is switched to apply to people other than the background. The reverse is also possible.
+
+### Customizing the code
+- Adding Style:
+
+1. Add the image of the style you want to add to the folder.
+![image](https://user-images.githubusercontent.com/38045080/87045078-68c33b80-c232-11ea-9bc4-24423f53cd5d.png)
+
+2. You can edit style_img in StyleTransfer class in style_transfer.py
+![image](https://user-images.githubusercontent.com/38045080/87045600-0880c980-c233-11ea-9a11-264b9a0fb45c.png)
+
+3. Adding Button - In Button setting function of ButtonManager class in Button.py, you can add Button object like other buttons.
+![image](https://user-images.githubusercontent.com/38045080/87045844-53024600-c233-11ea-9ff7-78ca040300bd.png)
+
+Below is an example of adding btn10.
+```python
+btn10 = Button("Button's Name")
+btn_list = [btn, btn2, btn3, btn4, btn5, btn6, btn7, btn10]
+self.add_button_list(btn_list)
+```
 
 ### Todos
 
