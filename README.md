@@ -85,8 +85,12 @@ btn10 = Button("Button's Name")
 btn_list = [btn, btn2, btn3, btn4, btn5, btn6, btn7, btn10]
 self.add_button_list(btn_list)
 ```
+### Examples
+![image](https://user-images.githubusercontent.com/38045080/87044437-762bf600-c231-11ea-84e4-1bbbc800ceb6.png)
+![image](https://user-images.githubusercontent.com/38045080/87044474-8643d580-c231-11ea-97a8-f0945ec43dd9.png)
 
-### Todos
+
+### To-do
 
  - FPS improvement
  
@@ -97,9 +101,9 @@ self.add_button_list(btn_list)
 ![real-time](https://user-images.githubusercontent.com/38045080/86984202-e4889e00-c1c8-11ea-8521-c115c42d302b.png)
 
 The project was conducted at the Korea Lab of Artificial Intelligence and formed a team called Mevia.
-- Harim Kang
-- Dahsom Jang
-- Yujin Nam
+- Harim Kang [Git-hub](https://github.com/harim4422)
+- Dahsom Jang [Git-hub](https://github.com/somsomdah)
+- Yujin Nam [Git-hub](https://github.com/namyouth)
 
 ![ezgif com-webp-to-png](https://user-images.githubusercontent.com/38045080/86984248-02560300-c1c9-11ea-8102-93ba35c05987.png)
 
