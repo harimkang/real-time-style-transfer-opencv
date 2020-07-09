@@ -79,6 +79,7 @@ And Use Buttons and Icon:
 ![image](https://user-images.githubusercontent.com/38045080/87045600-0880c980-c233-11ea-9a11-264b9a0fb45c.png)
 
 3. Adding Button - In Button setting function of ButtonManager class in Button.py, you can add Button object like other buttons.
+
 ![image](https://user-images.githubusercontent.com/38045080/87045844-53024600-c233-11ea-9ff7-78ca040300bd.png)
 
 Below is an example of adding btn10.
