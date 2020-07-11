@@ -1,6 +1,6 @@
 # real-time-style-transfer-opencv
 
-[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://davinci-ai.tistory.com/)
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fharimkang%2Freal-time-style-transfer-opencv)](https://hits.seeyoufarm.com)
 
 ![git_logo2](https://user-images.githubusercontent.com/38045080/86984908-d3409100-c1ca-11ea-8bf2-f2b450037a25.PNG)
 
