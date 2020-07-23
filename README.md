@@ -41,7 +41,7 @@ Clone Repository...
 ```sh
 $ mkdir project
 $ cd project
-$ git clone https://github.com/harim4422/real-time-style-transfer-opencv.git
+$ git clone https://github.com/harimkang/real-time-style-transfer-opencv.git
 $ cd real-time-style-transfer-opencv
 ```
 
@@ -52,7 +52,7 @@ real-time-style-transfer-opencv requires a model that segmentes people and a sty
 | Model | README |
 | ------ | ------ |
 | Style Transfer | [magnta/arbitrary-image-stylization-v1-256](https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2)|
-| People Segmentation | [U-Net][PlGh] |
+| People Segmentation | [U-Net] |
 
 
 ### Start Project
