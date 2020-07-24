@@ -2,7 +2,7 @@
 
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fharimkang%2Freal-time-style-transfer-opencv)](https://hits.seeyoufarm.com)
 
-![git_logo2](https://user-images.githubusercontent.com/38045080/86984908-d3409100-c1ca-11ea-8bf2-f2b450037a25.PNG)
+![real_time_st](https://user-images.githubusercontent.com/38045080/88360463-baca9c00-cdb0-11ea-8004-9bcdf1d07e3a.png)
 
 This project shows the streaming of open-cv by applying the style-transfer to the background (or person) except the person (or background) in real time using a web-cam connected to a laptop or computer.
 
@@ -101,7 +101,7 @@ self.add_button_list(btn_list)
 - [Davinci-AI](https://davinci-ai.tistory.com/)
 
 ## Team
-![real-time](https://user-images.githubusercontent.com/38045080/86984202-e4889e00-c1c8-11ea-8521-c115c42d302b.png)
+![mevia](https://user-images.githubusercontent.com/38045080/88360493-d6ce3d80-cdb0-11ea-9682-565f092a8db0.png)
 
 The project was conducted at the Korea Lab of Artificial Intelligence and formed a team called Mevia.
 - Harim Kang [Git-hub](https://github.com/harim4422)
