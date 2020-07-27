@@ -1,6 +1,6 @@
 # real-time-style-transfer-opencv
 
-[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fharimkang%2Freal-time-style-transfer-opencv)](https://hits.seeyoufarm.com)
+![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fharimkang/real-time-style-transfer-opencv) ![License](https://img.shields.io/github/license/harimkang/real-time-style-transfer-opencv?style=plastic) ![Stars](https://img.shields.io/github/stars/harimkang/real-time-style-transfer-opencv?style=social)
 
 ![real_time_st](https://user-images.githubusercontent.com/38045080/88360463-baca9c00-cdb0-11ea-8004-9bcdf1d07e3a.png)
 
