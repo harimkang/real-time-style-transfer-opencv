@@ -98,7 +98,7 @@ self.add_button_list(btn_list)
  - FPS improvement
  
 ### Blog Posting
-- [Davinci-AI](https://davinci-ai.tistory.com/)
+- [Davinci-AI](https://davinci-ai.tistory.com/49)
 
 ## Team
 ![mevia](https://user-images.githubusercontent.com/38045080/88360493-d6ce3d80-cdb0-11ea-9682-565f092a8db0.png)
